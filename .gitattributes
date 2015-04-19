@@ -1,2 +1,4 @@
 *.bat text eol=crlf
+export-ignore .gitignore
+export-ignore .gitattributes
 
