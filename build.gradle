@@ -1,0 +1,54 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+def prevRound
+def rounds = ['Round One': 'com/ffinance/eigas_challenge/round_one/RoundOne.java',
+              'Round Two': 'com/ffinance/eigas_challenge/round_two/RoundTwo.java',
+              'Round Three': 'com/ffinance/eigas_challenge/round_three/RoundThree.java',
+              'Round Four': 'com/ffinance/eigas_challenge/round_four/RoundFour.java',
+              'Round Five': 'com/ffinance/eigas_challenge/round_five/RoundFive.java',
+              'Answer Check': 'com/ffinance/eigas_challenge/Challenge.java']
+
+buildscript {
+    dependencies {
+        classpath files("$projectDir/build/classes/main")
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'lib', include: ['*.jar'])
+}
+
+rounds.each { round, roundSrc ->
+    task("compile$round", type: JavaCompile) {
+        source = sourceSets.main.java.srcDirs
+        include roundSrc
+        classpath = sourceSets.main.compileClasspath
+        destinationDir = sourceSets.main.output.classesDir
+        doFirst {
+            println "$round begins!"
+        }
+    }
+    tasks["compile$round"].options.compilerArgs = ["-sourcepath", "$projectDir/src/main/java"]
+    task(round, type: JavaExec, dependsOn: "compile$round") {
+        main = roundSrc.replace('.java', '')
+                       .replaceAll('/', '.')
+        classpath "$projectDir/build/classes/main"
+        if (prevRound) {
+            mustRunAfter prevRound
+        }
+        doLast {
+            println "$round passed!"
+        }
+    }
+    prevRound = round
+}
+
+task challenge(type: JavaExec, dependsOn: [clean, 'compileAnswer Check', 'Round One', 'Round Two', 'Round Three', 'Round Four', 'Round Five']) {
+    main = 'com.ffinance.eigas_challenge.Challenge'
+    classpath "$projectDir/build/classes/main", 'lib/Eiga.jar'
+    mustRunAfter clean
+}
