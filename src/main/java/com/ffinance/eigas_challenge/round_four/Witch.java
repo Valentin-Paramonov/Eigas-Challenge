@@ -1,6 +1,6 @@
 package com.ffinance.eigas_challenge.round_four;
 
-public class Witch implements Maiden {
+class Witch implements Maiden {
 
     @Override
     public String kiss() {

@@ -2,7 +2,7 @@ package com.ffinance.eigas_challenge.round_four;
 
 import com.ffinance.eigas_challenge.Decoder;
 
-public class Princess implements Maiden {
+class Princess implements Maiden {
 
     @Override
     public String kiss() {
